@@ -1,18 +1,22 @@
 .PHONY: build test fmt
 
-GOPATH = $(shell pwd)
+GOPATH = $(HOME)/gopath
 export GOPATH
 
-build: test
-	bin/revel build rottenrepos
+REVEL = $(GOPATH)/bin/revel
 
-test: fmt
-	bin/revel test rottenrepos
+$(REVEL):
+	go get github.com/robfig/revel
+
+build: test
+	$(REVEL) build github.com/stackmachine/rottenrepos
+
+test: fmt $(REVEL)
+	$(REVEL) test github.com/stackmachine/rottenrepos
 
 fmt:
-	gofmt -l -w src/codespy
-	gofmt -l -w src/rottenrepos
+	gofmt -l -w app tests codespy
 
 
-serve: fmt
-	bin/revel run rottenrepos
+serve: fmt $(REVEL)
+	$(REVEL) run github.com/stackmachine/rottenrepos

@@ -1,6 +1,12 @@
 package app
 
-import "github.com/robfig/revel"
+import (
+	"os"
+	"time"
+	"strings"
+	"github.com/robfig/revel"
+	"github.com/robfig/revel/cache"
+)
 
 func init() {
 	// Filters is the default set of global filters.
@@ -15,5 +21,16 @@ func init() {
 		revel.I18nFilter,              // Resolve the requested language
 		revel.InterceptorFilter,       // Run interceptors around the action.
 		revel.ActionInvoker,           // Invoke the action.
+
 	}
+
+	revel.OnAppStart(func() {
+		if os.Getenv("MEMCACHIER_SERVERS") == "" {
+			return
+		}
+
+		servers := os.Getenv("MEMCACHIER_SERVERS")
+
+		cache.Instance = cache.NewMemcachedCache(strings.Split(servers, ","), time.Hour)
+	})
 }

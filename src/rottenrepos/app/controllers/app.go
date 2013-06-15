@@ -5,9 +5,9 @@ import (
 	"github.com/robfig/revel"
 	"github.com/robfig/revel/cache"
 	"net/http"
-	"time"
-	"strings"
 	"regexp"
+	"strings"
+	"time"
 )
 
 type Check struct {
@@ -19,13 +19,97 @@ type Review struct {
 	Checks []Check
 }
 
+func (r *Review) ChecksPassed() int {
+	count := 0
+	for _, check := range r.Checks {
+		if check.Passed {
+			count = count + 1
+		}
+
+	}
+	return count
+}
+
+type Repository struct {
+	*Review
+	Description string
+	Name        string
+	User        string
+}
+
 type App struct {
 	*revel.Controller
 }
 
+func FetchRepository(user string, repo string) Repository {
+	var review Review
+	key := "github-" + user + "-" + repo
+	err := cache.Get(key, &review)
+
+	r := Repository{Description: "", Name: repo, User: user}
+
+	if err != nil {
+		return r
+	}
+
+	r.Review = &review
+	return r
+}
+
+func FindFiles(user string, repo string, files ...string) bool {
+	base := "https://api.github.com"
+
+	found := make(chan bool)
+	misses := make(chan bool)
+
+	for _, file := range files {
+		go func(b string, u string, r string, f string) {
+			url := fmt.Sprintf("%s/repos/%s/%s/contents/%s", b, u, r, f)
+			resp, err := http.Get(url)
+
+			if err != nil {
+				misses <- true
+				return
+			}
+
+			if resp.StatusCode == 200 {
+				found <- true
+				return
+			}
+
+			misses <- true
+		}(base, user, repo, file)
+	}
+
+	count := 0
+
+	select {
+	case <-found:
+		return true
+	case <-misses:
+		count = count + 1
+		if count == len(files) {
+			return false
+		}
+	}
+
+	return false
+}
 
 func (c App) Index() revel.Result {
-	return c.Render()
+	repos := []Repository{
+		FetchRepository("mooseburger", "AbcaTSH"),
+		FetchRepository("blakeembrey", "code-problems"),
+		FetchRepository("m242", "maildrop"),
+		FetchRepository("qq99", "echoplexus"),
+		FetchRepository("lampepfl", "scala-js"),
+		FetchRepository("creaktive", "rainbarf"),
+		FetchRepository("AFNetworking", "AFNetworking"),
+		FetchRepository("mitsuhiko", "flask"),
+		FetchRepository("libgit2", "libgit2"),
+	}
+
+	return c.Render(repos)
 }
 
 func (c App) FindReport(repository string) revel.Result {
@@ -75,9 +159,18 @@ func (c App) ReportCard(user string, repo string) revel.Result {
 
 			checks <- Check{Passed: true, Comment: "Repository exists"}
 			return
-
 		}()
 
+		// Check for LICENSE
+		go func() {
+			if FindFiles(user, repo, "LICENSE", "LICENSE.txt") {
+				checks <- Check{Passed: true, Comment: "LICENSE in repository"}
+			} else {
+				checks <- Check{Passed: false, Comment: "No LICENSE in repository"}
+			}
+		}()
+
+		// Check for README
 		go func() {
 			readme_url := fmt.Sprintf("%s/repos/%s/%s/readme", base, user, repo)
 			resp, err := http.Get(readme_url)
@@ -95,7 +188,7 @@ func (c App) ReportCard(user string, repo string) revel.Result {
 			checks <- Check{Passed: true, Comment: "README in repository"}
 		}()
 
-		for i := 0; i < 2; i++ {
+		for i := 0; i < 3; i++ {
 			review.Checks = append(review.Checks, <-checks)
 		}
 

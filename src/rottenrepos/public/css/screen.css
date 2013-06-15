@@ -1,3 +1,38 @@
 #findrepo input {
   font-size: 1em;
 }
+
+.loading {
+  text-align: center;
+}
+
+.loading > img, .loading > p{
+  padding: 10px;
+}
+
+.report {
+  list-style-type: none;
+}
+
+.report li {
+  margin: 0 0 10px 0;
+}
+
+.glyph {
+  border-radius: 5px;
+  display: inline-block;
+  padding:  5px 10px;
+  color: #FFF;
+}
+
+.glyph.passed {
+  background: green;
+}
+
+.sidebar ul {
+  margin-left: 20px;
+}
+
+.glyph.failed {
+  background: red;
+}

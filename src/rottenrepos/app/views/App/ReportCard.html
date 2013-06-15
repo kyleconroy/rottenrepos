@@ -3,29 +3,62 @@
 {{template "flash.html" .}}
 {{end}}
 
-{{if not .partial}}<div class="row" id="card">{{end}}
-{{if .missing }}
-<h2 data-user="{{.user}}" data-repo="{{.repo}}">{{ .user }}/{{ .repo }}</h2>
-<p>LOADING</p>
-<script type="text/javascript" src="/public/js/jquery-1.9.1.min.js"></script>
-<script type="text/javascript" src="/public/js/reportcard.js"></script>
-{{else}}
-<h2>{{ .user }}/{{ .repo }}</h2>
-<p>REPORT CARD</p>
-<ul>
-  {{range .review.Checks}}
-  <li>
-    {{if .Passed }}
-    PASSED
-    {{else}}
-    FAILED
+{{if not .partial}}
+<div class="row">
+  <div id="card" class="large-8 columns">
     {{end}}
-    {{ .Comment }}
-  </li>
-  {{end}}
-</ul>
+    {{if .missing }}
+    <h2 data-user="{{.user}}" data-repo="{{.repo}}">{{ .user }}/{{ .repo }}</h2>
+    <div class="loading">
+      <img src="/public/images/loader.gif" alt="Loading" />
+      <p>Generating report...</p>
+    </div>
+
+    <script type="text/javascript" src="/public/js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="/public/js/reportcard.js"></script>
+    {{else}}
+    <h2><a href="/github/{{.user}}/{{.repo}}">{{.user}}/{{.repo}}</a></h2>
+    <h4>Open Source Report Card</h4>
+
+    <ul class="report">
+      {{range .review.Checks}}
+      <li>
+        {{if .Passed }}
+        <span class="glyph passed">&#10003;</span>
+        {{else}}
+        <span class="glyph failed">&#10007;</span>
+        {{end}}
+        {{ .Comment }}
+      </li>
+      {{end}}
+    </ul>
+    {{end}}
+    {{if not .partial}}
+  </div>
+
+  <div class="large-4 columns sidebar">
+    <h3>Links</h3>
+    <ul>
+      <li>
+        <a href="https://github.com/{{.user}}/{{.repo}}">Github Repository</a>
+      </li>
+    </ul>
+    <h3>Notifications</h3>
+    <p>Sign up to recieve alerts for this repository. Get notified of:</p>
+    <ul>
+      <li>Ignored Issues and Pull Requests</li>
+      <li>Abandoned branches</li>
+      <li>Out of date dependencies</li>
+      <li>Common syntax errors</li>
+    </li>
+  </ul>
+  <form  method="POST" action="/subscribe">
+    <input type="email" name="email" required placeholder="Email Address">
+    <input class="button" type="submit" value="Subscribe">
+  </form>
+</div>
+</div>
 {{end}}
-{{if not .partial}}</div>{{end}}
 
 {{if not .partial}}
 {{template "footer.html" .}}

@@ -3,8 +3,16 @@
 GOPATH = $(shell pwd)
 export GOPATH
 
+build: test
+	bin/revel build rottenrepos
+
 test: fmt
-	go test rotten
+	bin/revel test rottenrepos
 
 fmt:
-	go fmt rotten
+	go fmt codespy
+	go fmt rottenrepos/app rottenrepos/tests
+
+
+serve: fmt
+	bin/revel run rottenrepos

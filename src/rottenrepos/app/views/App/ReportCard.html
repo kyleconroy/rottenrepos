@@ -1,0 +1,22 @@
+{{if not .partial}}
+{{template "header.html" .}}
+{{template "flash.html" .}}
+{{end}}
+
+{{if not .partial}}
+<section id="card">
+<h2 data-user="{{.user}}" data-repo="{{.repo}}">{{ .user }}/{{ .repo }}</h2>
+<p>LOADING</p>
+
+<script type="text/javascript" src="/public/js/jquery-1.9.1.min.js"></script>
+<script type="text/javascript" src="/public/js/reportcard.js"></script>
+</section>
+{{else}}
+<h2>{{ .user }}/{{ .repo }}</h2>
+<p>REPORT CARD</p>
+{{end}}
+
+{{if not .partial}}
+{{template "footer.html" .}}
+{{end}}
+

@@ -10,8 +10,8 @@ test: fmt
 	bin/revel test rottenrepos
 
 fmt:
-	go fmt codespy
-	go fmt rottenrepos/app rottenrepos/tests
+	gofmt -l -w src/codespy
+	gofmt -l -w src/rottenrepos
 
 
 serve: fmt

@@ -5,6 +5,7 @@
 module:testrunner
 
 GET     /                                       App.Index
+POST    /                                       App.FindReport
 GET     /github/:user/:repo                     App.ReportCard
 
 # Ignore favicon requests

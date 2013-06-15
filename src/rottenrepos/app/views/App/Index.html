@@ -2,7 +2,30 @@
 {{template "header.html" .}}
 {{template "flash.html" .}}
 
-<h1>Your Application Is Ready</h1>
+<div class="row">
+  <form id="findrepo" method="POST" action="/">
+    <div class="row collapse">
+      <div class="large-8 columns">
+        <input type="text" name="repository" required placeholder="user/repo">
+      </div>
+      <div class="large-4 columns">
+        <input class="button prefix" type="submit" value="Review Repository">
+      </div>
+    </div>
+  </form>
+</div>
+<div class="row">
+  <div class="large-4 columns">
+    THING 1
+  </div>
+  <div class="large-4 columns">
+    THING 2
+  </div>
+  <div class="large-4 columns">
+    THING 3
+  </div>
+</div>
+
 
 {{template "footer.html" .}}
 

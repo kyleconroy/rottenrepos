@@ -1,0 +1,14 @@
+Flask==0.9
+Flask-Assets==0.8
+Flask-FlatPages==0.3
+Flask-Markdown==0.3
+Frozen-Flask==0.9
+Jinja2==2.6
+Markdown==2.2.1
+PyYAML==3.10
+Pygments==1.5
+Werkzeug==0.8.3
+argh==0.17.2
+argparse==1.2.1
+webassets==0.8
+wsgiref==0.1.2

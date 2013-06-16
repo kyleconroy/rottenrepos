@@ -35,7 +35,7 @@ func main() {
 				Args: []*revel.MethodArg{ 
 				},
 				RenderArgNames: map[int][]string{ 
-					112: []string{ 
+					113: []string{ 
 						"repos",
 					},
 				},
@@ -55,7 +55,7 @@ func main() {
 					&revel.MethodArg{Name: "repo", Type: reflect.TypeOf((*string)(nil)) },
 				},
 				RenderArgNames: map[int][]string{ 
-					198: []string{ 
+					208: []string{ 
 						"user",
 						"repo",
 						"title",
@@ -128,8 +128,8 @@ func main() {
 	
 	revel.DefaultValidationKeys = map[string]map[int]string{ 
 		"github.com/stackmachine/rottenrepos/app/controllers.App.FindReport": { 
-			116: "repository",
 			117: "repository",
+			118: "repository",
 		},
 	}
 	revel.TestSuites = []interface{}{ 

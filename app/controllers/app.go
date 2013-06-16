@@ -3,7 +3,8 @@ package controllers
 import (
 	"fmt"
 	"github.com/robfig/revel"
-	"github.com/robfig/revel/cache"
+	"github.com/stackmachine/rottenrepos/cache"
+	"log"
 	"net/http"
 	"regexp"
 	"strings"
@@ -44,11 +45,11 @@ type App struct {
 func FetchRepository(user string, repo string) Repository {
 	var review Review
 	key := "github-" + user + "-" + repo
-	err := cache.Get(key, &review)
+	err, found := cache.Get(key, &review)
 
 	r := Repository{Description: "", Name: repo, User: user}
 
-	if err != nil {
+	if err != nil || !found {
 		return r
 	}
 
@@ -135,10 +136,15 @@ func (c App) ReportCard(user string, repo string) revel.Result {
 	// Create a review channel
 	var review Review
 
-	err := cache.Get(key, &review)
-	missing := err != nil
+	err, found := cache.Get(key, &review)
 
-	if missing && partial {
+	if err != nil {
+		return c.RenderError(err)
+	}
+
+	missing := !found
+
+	if !found && partial {
 
 		checks := make(chan Check)
 		base := "https://api.github.com"
@@ -151,6 +157,8 @@ func (c App) ReportCard(user string, repo string) revel.Result {
 				checks <- Check{Passed: false, Comment: "GitHub Error :("}
 				return
 			}
+
+			log.Println(resp.StatusCode)
 
 			if resp.StatusCode != 200 {
 				checks <- Check{Passed: false, Comment: "Repository doesn't exist"}
@@ -179,6 +187,8 @@ func (c App) ReportCard(user string, repo string) revel.Result {
 				checks <- Check{Passed: false, Comment: "GitHub error :("}
 				return
 			}
+
+			log.Println(resp.StatusCode)
 
 			if resp.StatusCode != 200 {
 				checks <- Check{Passed: false, Comment: "No README in repository"}

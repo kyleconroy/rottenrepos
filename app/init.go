@@ -1,11 +1,8 @@
 package app
 
 import (
-	"os"
-	"time"
-	"strings"
 	"github.com/robfig/revel"
-	"github.com/robfig/revel/cache"
+	"github.com/stackmachine/rottenrepos/cache"
 )
 
 func init() {
@@ -25,12 +22,6 @@ func init() {
 	}
 
 	revel.OnAppStart(func() {
-		if os.Getenv("MEMCACHIER_SERVERS") == "" {
-			return
-		}
-
-		servers := os.Getenv("MEMCACHIER_SERVERS")
-
-		cache.Instance = cache.NewMemcachedCache(strings.Split(servers, ","), time.Hour)
+		cache.Init()
 	})
 }
